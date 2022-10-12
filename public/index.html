@@ -1,0 +1,24 @@
+<html>
+    <body>
+        <script>
+            function addToPage(userData){
+                //1.utiliser les données pour générer du html
+                let html = `<p>${userData.firstname} - ${userData.age}`
+                
+                //2. Ajouter le html à la page
+                //document.createElement
+                //.innerHtml
+                //.append
+                let div = document.createElement("div")
+                div.innerHTML = html
+                let body = document.querySelector("body")    
+                body.appendChild(div)
+                //document.body.append(div)
+            }
+
+            fetch('/user')
+               .then(response => response.json())
+               .then(addToPage)
+        </script>
+    </body>
+</html>
