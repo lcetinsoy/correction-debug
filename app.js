@@ -3,6 +3,7 @@ const app = express()
 const port = 3000
 
 const authentication = require('./authentication')
+const { HomePage } = require('./view')
 
 //middleware = extension d'express = function
 
@@ -13,32 +14,54 @@ app.use(express.static("public"))
 app.use(jsonMiddleware)
 app.use(authentication.firewalMiddleware) // on passe la fonction sans l'appeler
 
-/**
- * public route (everyone can access)
- */
- app.get("/home", (request, response) => {
-  response.send("<h1>welcome !</h1>")
- })
 
-/** authenticating endpoint  */
-app.get("/authenticate", (request, response) => {
- 
-  authentication.authenticationSucessful()
+//exemple d'utilisation des paramètres url
+app.get("/get-user/:userID", (request, response) => {
 
-  response.send("authentifié!!")
-  //return token / store user is successfuly authenticated
+  console.log(request.params)
+
+  let userId = request.params.userID
+  console.log(userId)
+  response.send(request.params)
 
 })
 
+//exemple utilisation des query string ?key=value dans l'url
+app.get("/hello", (request, response) => {
+
+  console.log(request.query)
+  response.send(request.query)
+})
+
+
+
+/** authenticating endpoint  */
+app.post("/authenticate", (request, response) => {
+  let login = request.body.login
+  let password = request.body.password
+
+  //if sucess generates the token and send it to the client
+  if (authentication.checkCredentials(login, password)){
+    let token = authentication.authenticationSucessful(login)
+    response.send({token: token})
+  }
+  else{
+    response.status(403)
+    response.send()
+  }
+  
+
+})
 
 /**
  * Returns user data as json
  */
  app.get("/restricted1", (request, response) => {
   
+  
   //no need to check for authentification
   //already done in the middleware
-  response.json({sensitiveData:42})
+  response.send({data:42})
 })
 
 /**
